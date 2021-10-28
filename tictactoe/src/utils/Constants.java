@@ -22,4 +22,8 @@ public class Constants {
 
     public static final String GAME_END_NO_WINNER = "Game ends in a draw";
 
+    public static final int WINNING_CONDITION = 3;
+
+    public static final int MIN_MOVES_FOR_WINNING_CHECK = 4;
+
 }
