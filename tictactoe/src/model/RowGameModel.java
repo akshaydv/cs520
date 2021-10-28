@@ -1,16 +1,17 @@
 package model;
 
 
-public class RowGameModel 
+import enums.Player;
+
+public class RowGameModel
 {
-    public static final String GAME_END_NO_WINNER = "Game ends in a draw";
 
     private final RowBlockModel[][] blocksData;
 
     /**
      * The current player taking their turn
      */
-    private String player = "1";
+    private Player player = Player.PLAYER_1;
     private int movesLeft;
 
     private String finalResult = null;
@@ -40,11 +41,11 @@ public class RowGameModel
         return blocksData;
     }
 
-    public String getPlayer() {
+    public Player getPlayer() {
         return player;
     }
 
-    public void setPlayer(String player) {
+    public void setPlayer(Player player) {
         this.player = player;
     }
 
