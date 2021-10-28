@@ -11,11 +11,11 @@ import model.RowGameModel;
 import controller.RowGameController;
 
 public class RowGameGUI {
-    public JFrame gui = new JFrame("Tic Tac Toe");
-    public RowGameModel gameModel = new RowGameModel();
-    public JButton[][] blocks = new JButton[3][3];
-    public JButton reset = new JButton("Reset");
-    public JTextArea playerturn = new JTextArea();
+    private final JFrame gui = new JFrame("Tic Tac Toe");
+    private final RowGameModel gameModel = new RowGameModel(3, 3);
+    private final JButton[][] blocks = new JButton[3][3];
+    private final JButton reset = new JButton("Reset");
+    private final JTextArea playerTurn = new JTextArea();
 
     /**
      * Creates a new game initializing the GUI.
@@ -38,8 +38,8 @@ public class RowGameGUI {
         gui.add(options, BorderLayout.CENTER);
         gui.add(messages, BorderLayout.SOUTH);
 
-        messages.add(playerturn);
-        playerturn.setText("Player 1 to play 'X'");
+        messages.add(playerTurn);
+        playerTurn.setText("Player 1 to play 'X'");
 
         reset.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -71,7 +71,19 @@ public class RowGameGUI {
      * @param column The column that contains the block
      */
     public void updateBlock(RowGameModel gameModel, int row, int column) {
-	blocks[row][column].setText(gameModel.blocksData[row][column].getContents());
-	blocks[row][column].setEnabled(gameModel.blocksData[row][column].getIsLegalMove());
+	blocks[row][column].setText(gameModel.getBlocksData()[row][column].getContents());
+	blocks[row][column].setEnabled(gameModel.getBlocksData()[row][column].getIsLegalMove());
+    }
+
+    public JFrame getGui() {
+        return gui;
+    }
+
+    public JButton[][] getBlocks() {
+        return blocks;
+    }
+
+    public JTextArea getPlayerTurn() {
+        return playerTurn;
     }
 }
