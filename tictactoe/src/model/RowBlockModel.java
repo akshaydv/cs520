@@ -1,5 +1,7 @@
 package model;
 
+import utils.RowGameUtils;
+
 /**
  * The TicTacToeBlock class represents a given block in the game.
  */
@@ -8,7 +10,7 @@ public class RowBlockModel
     /**
      * The game that contains this block
      */
-    private RowGameModel game;
+    private final RowGameModel game;
 
     /**
      * The current value of the contents of this block
@@ -52,6 +54,13 @@ public class RowBlockModel
 	    throw new IllegalArgumentException("The value must be non-null.");
 	}
 	this.contents = value;
+    }
+
+    public void setContents(enums.Player player) {
+        if (player == null) {
+            throw new IllegalArgumentException("Player must be non-null.");
+        }
+        this.contents = RowGameUtils.getContent(player);
     }
 
     /**

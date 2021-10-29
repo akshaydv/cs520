@@ -13,9 +13,7 @@ import utils.Constants;
 
 public class RowGameGUI {
     private final JFrame gui = new JFrame(Constants.GAME_TITLE);
-    private final RowGameModel gameModel = new RowGameModel(3, 3);
-    private final JButton[][] blocks = new JButton[3][3];
-    private final JButton reset = new JButton(Constants.RESET);
+    private final JButton[][] blocks;
     private final JTextArea playerTurn = new JTextArea();
 
     /**
@@ -27,10 +25,13 @@ public class RowGameGUI {
         gui.setResizable(true);
 
         JPanel gamePanel = new JPanel(new FlowLayout());
-        JPanel game = new JPanel(new GridLayout(3,3));
+        JPanel game = new JPanel(new GridLayout(controller.getGameModel().getRows(),controller.getGameModel().getCols()));
         gamePanel.add(game, BorderLayout.CENTER);
 
+        this.blocks = new JButton[controller.getGameModel().getRows()][controller.getGameModel().getCols()];
+
         JPanel options = new JPanel(new FlowLayout());
+        JButton reset = new JButton(Constants.RESET);
         options.add(reset);
         JPanel messages = new JPanel(new FlowLayout());
         messages.setBackground(Color.white);
@@ -49,14 +50,14 @@ public class RowGameGUI {
         });
 
         // Initialize a JButton for each cell of the 3x3 game board.
-        for(int row = 0; row<3; row++) {
-            for(int column = 0; column<3 ;column++) {
+        for(int row = 0; row<controller.getGameModel().getRows(); row++) {
+            for(int column = 0; column<controller.getGameModel().getCols() ;column++) {
                 blocks[row][column] = new JButton();
                 blocks[row][column].setPreferredSize(new Dimension(75,75));
                 game.add(blocks[row][column]);
                 blocks[row][column].addActionListener(new ActionListener() {
                     public void actionPerformed(ActionEvent e) {
-			controller.move((JButton)e.getSource());
+			controller.move((JButton)e.getSource(), controller.getGameModel().getPlayer());
                     }
                 });
             }

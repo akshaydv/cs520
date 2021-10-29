@@ -8,6 +8,10 @@ public class RowGameModel
 
     private final RowBlockModel[][] blocksData;
 
+    private int rows;
+
+    private int cols;
+
     /**
      * The current player taking their turn
      */
@@ -18,12 +22,14 @@ public class RowGameModel
 
     public RowGameModel(int rows, int cols) {
     super();
+    this.rows = rows;
+    this.cols = cols;
 
-        this.movesLeft = rows * cols;
-    blocksData = new RowBlockModel[rows][cols];
+        this.movesLeft = this.rows * this.cols;
+    blocksData = new RowBlockModel[this.rows][this.cols];
 
-    for (int row = 0; row < rows; row++) {
-        for (int col = 0; col < cols; col++) {
+    for (int row = 0; row < this.rows; row++) {
+        for (int col = 0; col < this.cols; col++) {
         blocksData[row][col] = new RowBlockModel(this);
         } // end for col
     } // end for row
@@ -55,5 +61,25 @@ public class RowGameModel
 
     public void setMovesLeft(int movesLeft) {
         this.movesLeft = movesLeft;
+    }
+
+    public void decrementMoves() {
+        this.movesLeft--;
+    }
+
+    public void swapPlayer() {
+        if (this.player == Player.PLAYER_1) {
+            this.player = Player.PLAYER_2;
+        } else {
+            this.player = Player.PLAYER_1;
+        }
+    }
+
+    public int getRows() {
+        return rows;
+    }
+
+    public int getCols() {
+        return cols;
     }
 }
