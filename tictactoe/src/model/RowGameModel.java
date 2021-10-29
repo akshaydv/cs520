@@ -3,6 +3,10 @@ package model;
 
 import enums.Player;
 
+/**
+ * Violation 4 - MVC Architecture
+ * RowGameModel is the model. It is waiting for updates from controller and does not interact with the view
+ */
 public class RowGameModel
 {
 
