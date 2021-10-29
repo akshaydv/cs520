@@ -2,6 +2,7 @@ import enums.Player;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+
 import static org.junit.Assert.*;
 
 import model.RowBlockModel;
@@ -15,22 +16,22 @@ public class TestExample {
 
     @Before
     public void setUp() {
-	game = new RowGameController();
+        game = new RowGameController(3, 3);
     }
 
     @After
     public void tearDown() {
-	game = null;
+        game = null;
     }
 
     @Test
     public void testNewGame() {
-        assertEquals (Player.PLAYER_1, game.getGameModel().getPlayer());
-        assertEquals (9, game.getGameModel().getMovesLeft());
+        assertEquals(Player.PLAYER_1, game.getGameModel().getPlayer());
+        assertEquals(9, game.getGameModel().getMovesLeft());
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testNewBlockViolatesPrecondition() {
-	RowBlockModel block = new RowBlockModel(null);
+        RowBlockModel block = new RowBlockModel(null);
     }
 }

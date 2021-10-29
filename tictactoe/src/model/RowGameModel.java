@@ -7,8 +7,7 @@ import enums.Player;
  * Violation 4 - MVC Architecture
  * RowGameModel is the model. It is waiting for updates from controller and does not interact with the view
  */
-public class RowGameModel
-{
+public class RowGameModel {
 
     private final RowBlockModel[][] blocksData;
 
@@ -25,26 +24,26 @@ public class RowGameModel
     private String finalResult = null;
 
     public RowGameModel(int rows, int cols) {
-    super();
-    this.rows = rows;
-    this.cols = cols;
+        super();
+        this.rows = rows;
+        this.cols = cols;
 
         this.movesLeft = this.rows * this.cols;
-    blocksData = new RowBlockModel[this.rows][this.cols];
+        blocksData = new RowBlockModel[this.rows][this.cols];
 
-    for (int row = 0; row < this.rows; row++) {
-        for (int col = 0; col < this.cols; col++) {
-        blocksData[row][col] = new RowBlockModel(this);
-        } // end for col
-    } // end for row
+        for (int row = 0; row < this.rows; row++) {
+            for (int col = 0; col < this.cols; col++) {
+                blocksData[row][col] = new RowBlockModel(this);
+            } // end for col
+        } // end for row
     }
 
     public String getFinalResult() {
-	return this.finalResult;
+        return this.finalResult;
     }
 
     public void setFinalResult(String finalResult) {
-	this.finalResult = finalResult;
+        this.finalResult = finalResult;
     }
 
     public RowBlockModel[][] getBlocksData() {
