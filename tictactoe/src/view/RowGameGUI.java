@@ -11,6 +11,11 @@ import model.RowGameModel;
 import controller.RowGameController;
 import utils.Constants;
 
+/**
+ * Violation 4 - MVC Architecture
+ * RowGameGUI is the view. It only interacts with the controller and modifies the view based on events from controller.
+ * It does not directly interact with the model.
+ */
 public class RowGameGUI {
     private final JFrame gui = new JFrame(Constants.GAME_TITLE);
     private final JButton[][] blocks;

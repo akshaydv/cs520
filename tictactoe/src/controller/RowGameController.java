@@ -8,6 +8,11 @@ import utils.Constants;
 import utils.RowGameUtils;
 import view.RowGameGUI;
 
+/**
+ * Violation 4 - MVC Architecture
+ * RowGameController is the controller between model and view.
+ * Changes that are received from view are being propagated to the model and vice versa.
+ */
 public class RowGameController {
 	private final RowGameModel gameModel;
 	private final RowGameGUI gameView;
@@ -61,7 +66,6 @@ public class RowGameController {
 		}
 	}
     }
-
 
 	private void checkIfGameHasEnded(Player player, int row, int col) {
 		if(shouldCheckForGameEnd()) {
