@@ -14,164 +14,284 @@ import view.RowGameGUI;
  * Changes that are received from view are being propagated to the model and vice versa.
  */
 public class RowGameController {
-	private final RowGameModel gameModel;
-	private final RowGameGUI gameView;
+    private final RowGameModel gameModel;
+    private final RowGameGUI gameView;
 
-	/**
-     * Creates a new game initializing the GUI.
+    /**
+     * Creates a new game, initializes the view and model for the game
+     *
+     * @param rows - number of rows for the game
+     * @param cols - number of cols for the game
      */
     public RowGameController(int rows, int cols) {
-	gameModel = new RowGameModel(rows, cols);
-	gameView = new RowGameGUI(this);
+        gameModel = new RowGameModel(rows, cols);
+        gameView = new RowGameGUI(this);
 
-        for(int row = 0; row<gameModel.getRows(); row++) {
-            for(int column = 0; column<gameModel.getCols() ;column++) {
-	        gameModel.getBlocksData()[row][column].setContents("");
-		gameModel.getBlocksData()[row][column].setIsLegalMove(true);
-		gameView.updateBlock(gameModel,row,column);
+        for (int row = 0; row < gameModel.getRows(); row++) {
+            for (int column = 0; column < gameModel.getCols(); column++) {
+                gameModel.getBlocksData()[row][column].setContents("");
+                gameModel.getBlocksData()[row][column].setIsLegalMove(true);
+                gameView.updateBlock(gameModel, row, column);
             }
         }
     }
 
-	public RowGameModel getGameModel() {
-		return gameModel;
-	}
-
-	public RowGameGUI getGameView() {
-		return gameView;
-	}
-
-	/**
-     * Moves the current player into the given block.
+    /**
+     * Moves the current player into the given block and checks if the game is finished.
      *
-	 * @param block The block to be moved to by the current player
-	 * @param player
-	 */
+     * @param block  - The block to be moved to by the current player
+     * @param player - Current player making the move
+     */
     public void move(JButton block, Player player) {
-	gameModel.decrementMoves();
-	if(gameModel.getMovesLeft()%2 == 1) {
-	    gameView.getPlayerTurn().setText(Constants.PLAYER_1_TURN);
-	} else{
-	    gameView.getPlayerTurn().setText(Constants.PLAYER_2_TURN);
-	}
+        gameModel.decrementMoves();
+        if (gameModel.getMovesLeft() % 2 == 1) {
+            gameView.getPlayerTurn().setText(Constants.PLAYER_1_TURN);
+        } else {
+            gameView.getPlayerTurn().setText(Constants.PLAYER_2_TURN);
+        }
 
-	for (int i = 0; i < gameModel.getRows(); i++) {
-		for (int j = 0; j < gameModel.getCols(); j++) {
-			if (block==gameView.getBlocks()[i][j]) {
-				gameModel.getBlocksData()[i][j].setContents(player);
-				gameView.updateBlock(gameModel, i, j);
-				gameModel.swapPlayer();
-				checkIfGameHasEnded(player, i, j);
-			}
-		}
-	}
+        // Iterate all blocks to match the block being changed
+        for (int i = 0; i < gameModel.getRows(); i++) {
+            for (int j = 0; j < gameModel.getCols(); j++) {
+
+                // If block is found
+                if (block == gameView.getBlocks()[i][j]) {
+                    // Sets the appropriate tile value for current player
+                    gameModel.getBlocksData()[i][j].setContents(player);
+
+                    // Update the view to reflect the value change
+                    gameView.updateBlock(gameModel, i, j);
+
+                    // Check if there is a winner, if yes, end the game
+                    checkIfGameHasEnded(player, i, j);
+
+                    // As the operation is done, swap the player
+                    gameModel.swapPlayer();
+                }
+            }
+        }
     }
 
-	private void checkIfGameHasEnded(Player player, int row, int col) {
-		if(shouldCheckForGameEnd()) {
-			if(checkWinningCondition(row, col, player)) {
-				gameModel.setFinalResult(RowGameUtils.getFinalResult(player));
-				endGame();
-			} else if(gameModel.getMovesLeft()==0) {
-				gameModel.setFinalResult(Constants.GAME_END_NO_WINNER);
-			}
-			if (gameModel.getFinalResult() != null) {
-				gameView.getPlayerTurn().setText(gameModel.getFinalResult());
-			}
-		}
-	}
+    /**
+     * Checks if there is a winner or the game has ended
+     *
+     * @param player - Player making the move
+     * @param row    - Row of the block in which the move is done
+     * @param col    - Col of the block in which the move is done
+     */
+    private void checkIfGameHasEnded(Player player, int row, int col) {
 
-	private boolean shouldCheckForGameEnd() {
-		return gameModel.getMovesLeft() < (gameModel.getRows() * gameModel.getCols() - Constants.MIN_MOVES_FOR_WINNING_CHECK);
-	}
+        // We don't need to check if there is a winner for the beginning turns
+        if (shouldCheckForGameEnd()) {
 
-	private boolean checkWinningCondition(int row, int col, Player player) {
-		String winningString = getWinningString(player);
-		return checkHorizontalWin(row, col, winningString)
-				|| checkVerticalWin(row, col, winningString)
-				|| checkDiagonalWin(row, col, winningString);
-	}
+            // Check if there is a winner
+            if (checkWinningCondition(row, col, player)) {
 
-	private boolean checkDiagonalWin(int row, int col, String winningString) {
-		StringBuilder leftDiagonal  = new StringBuilder();
-		StringBuilder rightDiagonal = new StringBuilder();
-		for (int i = 1; i < Constants.WINNING_CONDITION; i++) {
-			if (row - i >= 0 && col + i < gameModel.getCols()) leftDiagonal.append(getContents(row - i, col + i));
-			if (row - i >= 0 && col - i >= 0) rightDiagonal.append(getContents(row - i, col - i));
-		}
-		leftDiagonal.append(getContents(row, col));
-		rightDiagonal.append(getContents(row, col));
-		for (int i = 1; i < Constants.WINNING_CONDITION; i++) {
-			if (col - i >= 0 && row + i < gameModel.getRows()) leftDiagonal.append(getContents(row + i, col - i));
-			if (row + i < gameModel.getRows() && col + i < gameModel.getCols()) rightDiagonal.append(getContents(row + i, col + i));
-		}
-		return leftDiagonal.toString().contains(winningString) || rightDiagonal.toString().contains(winningString);
-	}
+                // We found a winner, set the final result
+                gameModel.setFinalResult(RowGameUtils.getFinalResult(player));
 
-	private boolean checkVerticalWin(int row, int col, String winningString) {
-		int start = row - 2;
-		int end   = row + 2;
-		int i = start;
-		StringBuilder stringBuilder = new StringBuilder();
-		while (i >= 0 && i < gameModel.getRows() && i <= end) {
-			stringBuilder.append(getContents(i, col));
-			i++;
-		}
-		return stringBuilder.toString().contains(winningString);
-	}
+                // End the game.
+                endGame();
+            } else if (gameModel.getMovesLeft() == 0) {
 
-	private boolean checkHorizontalWin(int row, int col, String winningString) {
-		int start = col - 2;
-		int end   = col + 2;
-		int i = start;
-		StringBuilder stringBuilder = new StringBuilder();
-		while (i >= 0 && i < gameModel.getCols() && i <= end) {
-			stringBuilder.append(getContents(row, i));
-			i++;
-		}
-		return stringBuilder.toString().contains(winningString);
-	}
+                // No moves left, so the game ends in a draw
+                gameModel.setFinalResult(Constants.GAME_END_NO_WINNER);
 
-	private String getWinningString(Player player) {
-		if (player == Player.PLAYER_1) {
-			return "XXX";
-		} else {
-			return "OOO";
-		}
-	}
+                // End the game.
+                endGame();
+            }
 
-	private String getContents(int i, int j) {
-		String contents = gameModel.getBlocksData()[i][j].getContents();
-		if (contents.isEmpty()) {
-			return "-";
-		}
-		return contents;
-	}
+            // If we have a final result in either a draw or win, set the text
+            if (gameModel.getFinalResult() != null) {
+                gameView.getPlayerTurn().setText(gameModel.getFinalResult());
+            }
+        }
+    }
+
+    /**
+     * Checks if we need to check if there is a draw or the game has ended
+     *
+     * @return - boolean signifying if end game is to be checked
+     */
+    private boolean shouldCheckForGameEnd() {
+        return gameModel.getMovesLeft() < (gameModel.getRows() * gameModel.getCols() - Constants.MIN_MOVES_FOR_WINNING_CHECK);
+    }
+
+    /**
+     * Checks if someone has won
+     *
+     * @param row    - Block's row
+     * @param col    - Block's col
+     * @param player - Player who has made the move
+     * @return - boolean signifying if the player has won
+     */
+    private boolean checkWinningCondition(int row, int col, Player player) {
+        String winningString = getWinningString(player);
+        return checkHorizontalWin(row, col, winningString)
+                || checkVerticalWin(row, col, winningString)
+                || checkDiagonalWin(row, col, winningString);
+    }
+
+    /**
+     * Checks if the player has a winning condition in a diagonal of length 5 with the current element in it
+     *
+     * @param row           - block's row
+     * @param col           - block's col
+     * @param winningString - Pattern for which the player is considered the winner
+     * @return -
+     */
+    private boolean checkDiagonalWin(int row, int col, String winningString) {
+
+        // For cases where there are already 2 Xs or Os diagonal to the block- X
+        //  starting from left                                                  X
+        //                                                                       _
+        //                                                                        X
+        //                                                                         X
+
+        StringBuilder leftDiagonal = new StringBuilder();
+
+        // For cases where there are already 2 Xs or Os diagonal to the block-      X
+        // starting from right                                                     X
+        //                                                                        _
+        //                                                                       X
+        //                                                                      X
+        StringBuilder rightDiagonal = new StringBuilder();
+
+
+        for (int i = 1; i < Constants.WINNING_CONDITION; i++) {
+            if (row - i >= 0 && col + i < gameModel.getCols()) leftDiagonal.append(getContents(row - i, col + i));
+            if (row - i >= 0 && col - i >= 0) rightDiagonal.append(getContents(row - i, col - i));
+        }
+        leftDiagonal.append(getContents(row, col));
+
+        rightDiagonal.append(getContents(row, col));
+        for (int i = 1; i < Constants.WINNING_CONDITION; i++) {
+            if (col - i >= 0 && row + i < gameModel.getRows()) leftDiagonal.append(getContents(row + i, col - i));
+            if (row + i < gameModel.getRows() && col + i < gameModel.getCols())
+                rightDiagonal.append(getContents(row + i, col + i));
+        }
+
+        // Check if any of the diagonals has the pattern
+        return leftDiagonal.toString().contains(winningString) || rightDiagonal.toString().contains(winningString);
+    }
+
+    /**
+     * Checks if the player has a winning condition in the current column
+     *
+     * @param row           - block's row
+     * @param col           - block's col
+     * @param winningString - Pattern for which the player is considered the winner
+     * @return -
+     */
+    private boolean checkVerticalWin(int row, int col, String winningString) {
+
+        // For cases where there are already 2 Xs or Os up the current block - X        O
+        //                                                                     X   or   O
+        //                                                                     _        _
+        int start = row - 2;
+
+        // For cases where there are already 2 Xs or Os up the current block - _        _
+        //                                                                     X   or   O
+        //                                                                     X        O
+        int end = row + 2;
+
+        // Create a string from the row from 2 places up the current block to 2 places below the current block
+        int i = start;
+        StringBuilder stringBuilder = new StringBuilder();
+        while (i >= 0 && i < gameModel.getRows() && i <= end) {
+            stringBuilder.append(getContents(i, col));
+            i++;
+        }
+
+        // Check if the pattern is in the string of length 5
+        return stringBuilder.toString().contains(winningString);
+    }
+
+    /**
+     * Checks if the player has a winning condition in the current row
+     *
+     * @param row           - block's row
+     * @param col           - block's col
+     * @param winningString - Pattern for which the player is considered the winner
+     * @return -
+     */
+    private boolean checkHorizontalWin(int row, int col, String winningString) {
+
+        // For cases where there are already 2 Xs or Os before current block - XX_ or OO_
+        int start = col - 2;
+
+        // For cases where there are already 2 Xs or Os after current block - _XX or _OO
+        int end = col + 2;
+
+        // Create a string from the row from 2 places behind the current block to 2 places after the current block
+        int i = start;
+        StringBuilder stringBuilder = new StringBuilder();
+        while (i >= 0 && i < gameModel.getCols() && i <= end) {
+            stringBuilder.append(getContents(row, i));
+            i++;
+        }
+
+        // Check if the pattern is in the string of length 5
+        return stringBuilder.toString().contains(winningString);
+    }
+
+    /**
+     * Returns a string which the board may have in any direction for which the player is considered the winner
+     * For example, if we find 3 Xs continuously in any row, column or diagonal, it means that Player 1 has won
+     * Player 1 - XXX
+     * Player 2 - OOO
+     *
+     * @param player - Player for who we are getting the string
+     * @return winning string pattern for the player
+     */
+    private String getWinningString(Player player) {
+        if (player == Player.PLAYER_1) {
+            return "XXX";
+        } else {
+            return "OOO";
+        }
+    }
+
+    private String getContents(int i, int j) {
+        String contents = gameModel.getBlocksData()[i][j].getContents();
+        if (contents.isEmpty()) {
+            return "-";
+        }
+        return contents;
+    }
 
     /**
      * Ends the game disallowing further player turns.
      */
     public void endGame() {
-	for(int row = 0;row<gameModel.getRows();row++) {
-	    for(int column = 0;column<gameModel.getCols();column++) {
-		gameView.getBlocks()[row][column].setEnabled(false);
-	    }
-	}
+        for (int row = 0; row < gameModel.getRows(); row++) {
+            for (int column = 0; column < gameModel.getCols(); column++) {
+                gameView.getBlocks()[row][column].setEnabled(false);
+            }
+        }
     }
 
     /**
      * Resets the game to be able to start playing again.
      */
     public void resetGame() {
-        for(int row = 0;row<gameModel.getRows();row++) {
-            for(int column = 0;column<gameModel.getCols();column++) {
+        for (int row = 0; row < gameModel.getRows(); row++) {
+            for (int column = 0; column < gameModel.getCols(); column++) {
                 gameModel.getBlocksData()[row][column].reset();
-		gameModel.getBlocksData()[row][column].setIsLegalMove(true);
-		gameView.updateBlock(gameModel,row,column);
+                gameModel.getBlocksData()[row][column].setIsLegalMove(true);
+                gameView.updateBlock(gameModel, row, column);
             }
         }
         gameModel.setPlayer(Player.PLAYER_1);
         gameModel.setMovesLeft(gameModel.getRows() * gameModel.getCols());
         gameView.getPlayerTurn().setText(Constants.GAME_START);
+    }
+
+    public RowGameModel getGameModel() {
+        return gameModel;
+    }
+
+    public RowGameGUI getGameView() {
+        return gameView;
     }
 }

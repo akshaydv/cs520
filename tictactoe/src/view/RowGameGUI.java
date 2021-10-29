@@ -22,7 +22,9 @@ public class RowGameGUI {
     private final JTextArea playerTurn = new JTextArea();
 
     /**
-     * Creates a new game initializing the GUI.
+     * Initializes the view
+     *
+     * @param controller - Controller which is initializing the view.
      */
     public RowGameGUI(RowGameController controller) {
         gui.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -30,7 +32,7 @@ public class RowGameGUI {
         gui.setResizable(true);
 
         JPanel gamePanel = new JPanel(new FlowLayout());
-        JPanel game = new JPanel(new GridLayout(controller.getGameModel().getRows(),controller.getGameModel().getCols()));
+        JPanel game = new JPanel(new GridLayout(controller.getGameModel().getRows(), controller.getGameModel().getCols()));
         gamePanel.add(game, BorderLayout.CENTER);
 
         this.blocks = new JButton[controller.getGameModel().getRows()][controller.getGameModel().getCols()];
@@ -48,38 +50,30 @@ public class RowGameGUI {
         messages.add(playerTurn);
         playerTurn.setText(Constants.GAME_START);
 
-        reset.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                controller.resetGame();
-            }
-        });
+        reset.addActionListener(e -> controller.resetGame());
 
         // Initialize a JButton for each cell of the 3x3 game board.
-        for(int row = 0; row<controller.getGameModel().getRows(); row++) {
-            for(int column = 0; column<controller.getGameModel().getCols() ;column++) {
+        for (int row = 0; row < controller.getGameModel().getRows(); row++) {
+            for (int column = 0; column < controller.getGameModel().getCols(); column++) {
                 blocks[row][column] = new JButton();
-                blocks[row][column].setPreferredSize(new Dimension(75,75));
+                blocks[row][column].setPreferredSize(new Dimension(75, 75));
                 game.add(blocks[row][column]);
-                blocks[row][column].addActionListener(new ActionListener() {
-                    public void actionPerformed(ActionEvent e) {
-			controller.move((JButton)e.getSource(), controller.getGameModel().getPlayer());
-                    }
-                });
+                blocks[row][column].addActionListener(e -> controller.move((JButton) e.getSource(), controller.getGameModel().getPlayer()));
             }
         }
     }
 
     /**
-     * Updates the block at the given row and column 
+     * Updates the block at the given row and column
      * after one of the player's moves.
      *
      * @param gameModel The RowGameModel containing the block
-     * @param row The row that contains the block
-     * @param column The column that contains the block
+     * @param row       The row that contains the block
+     * @param column    The column that contains the block
      */
     public void updateBlock(RowGameModel gameModel, int row, int column) {
-	blocks[row][column].setText(gameModel.getBlocksData()[row][column].getContents());
-	blocks[row][column].setEnabled(gameModel.getBlocksData()[row][column].getIsLegalMove());
+        blocks[row][column].setText(gameModel.getBlocksData()[row][column].getContents());
+        blocks[row][column].setEnabled(gameModel.getBlocksData()[row][column].getIsLegalMove());
     }
 
     public JFrame getGui() {
