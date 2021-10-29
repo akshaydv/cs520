@@ -1,3 +1,4 @@
+import enums.Player;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -24,7 +25,7 @@ public class TestExample {
 
     @Test
     public void testNewGame() {
-        assertEquals ("1", game.getGameModel().getPlayer());
+        assertEquals (Player.PLAYER_1, game.getGameModel().getPlayer());
         assertEquals (9, game.getGameModel().getMovesLeft());
     }
 

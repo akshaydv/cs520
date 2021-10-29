@@ -9,12 +9,13 @@ import java.awt.event.*;
 
 import model.RowGameModel;
 import controller.RowGameController;
+import utils.Constants;
 
 public class RowGameGUI {
-    private final JFrame gui = new JFrame("Tic Tac Toe");
+    private final JFrame gui = new JFrame(Constants.GAME_TITLE);
     private final RowGameModel gameModel = new RowGameModel(3, 3);
     private final JButton[][] blocks = new JButton[3][3];
-    private final JButton reset = new JButton("Reset");
+    private final JButton reset = new JButton(Constants.RESET);
     private final JTextArea playerTurn = new JTextArea();
 
     /**
@@ -39,7 +40,7 @@ public class RowGameGUI {
         gui.add(messages, BorderLayout.SOUTH);
 
         messages.add(playerTurn);
-        playerTurn.setText("Player 1 to play 'X'");
+        playerTurn.setText(Constants.GAME_START);
 
         reset.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
