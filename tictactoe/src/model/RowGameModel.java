@@ -33,7 +33,7 @@ public class RowGameModel {
 
         for (int row = 0; row < this.rows; row++) {
             for (int col = 0; col < this.cols; col++) {
-                blocksData[row][col] = new RowBlockModel(this);
+                blocksData[row][col] = new RowBlockModel();
             } // end for col
         } // end for row
     }

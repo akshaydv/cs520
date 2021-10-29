@@ -6,10 +6,6 @@ import utils.RowGameUtils;
  * The TicTacToeBlock class represents a given block in the game.
  */
 public class RowBlockModel {
-    /**
-     * The game that contains this block
-     */
-    private final RowGameModel game;
 
     /**
      * The current value of the contents of this block
@@ -24,22 +20,11 @@ public class RowBlockModel {
     /**
      * Creates a new block that will be contained in the given game.
      *
-     * @param game The game that will contain the new block
      * @throws IllegalArgumentException When the given game is null
      */
-    public RowBlockModel(RowGameModel game) {
+    public RowBlockModel() {
         super();
-
-        if (game == null) {
-            throw new IllegalArgumentException("The game must be non-null.");
-        }
-
-        this.game = game;
         this.reset();
-    }
-
-    public RowGameModel getGame() {
-        return this.game;
     }
 
     /**
