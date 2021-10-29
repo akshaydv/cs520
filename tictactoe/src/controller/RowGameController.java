@@ -29,8 +29,8 @@ public class RowGameController {
 
         for (int row = 0; row < gameModel.getRows(); row++) {
             for (int column = 0; column < gameModel.getCols(); column++) {
-                gameModel.getBlocksData()[row][column].setContents("");
                 gameModel.getBlocksData()[row][column].setIsLegalMove(true);
+                gameModel.getBlocksData()[row][column].setContents("");
                 gameView.updateBlock(gameModel, row, column);
             }
         }
@@ -57,7 +57,7 @@ public class RowGameController {
                 // If block is found
                 if (block == gameView.getBlocks()[i][j]) {
                     // Sets the appropriate tile value for current player
-                    gameModel.getBlocksData()[i][j].setContents(player);
+                    gameModel.getBlocksData()[i][j].setContents(RowGameUtils.getTileContent(player));
 
                     // Update the view to reflect the value change
                     gameView.updateBlock(gameModel, i, j);
@@ -67,6 +67,8 @@ public class RowGameController {
 
                     // As the operation is done, swap the player
                     gameModel.swapPlayer();
+
+                    break;
                 }
             }
         }
@@ -188,23 +190,15 @@ public class RowGameController {
         // For cases where there are already 2 Xs or Os up the current block - X        O
         //                                                                     X   or   O
         //                                                                     _        _
-        int start = row - 2;
+        int start = Math.max(row - 2, 0);
 
         // For cases where there are already 2 Xs or Os up the current block - _        _
         //                                                                     X   or   O
         //                                                                     X        O
-        int end = row + 2;
+        int end = Math.min(row + 2, getGameModel().getRows() - 1);
 
         // Create a string from the row from 2 places up the current block to 2 places below the current block
-        int i = start;
-        StringBuilder stringBuilder = new StringBuilder();
-        while (i >= 0 && i < gameModel.getRows() && i <= end) {
-            stringBuilder.append(getContents(i, col));
-            i++;
-        }
-
-        // Check if the pattern is in the string of length 5
-        return stringBuilder.toString().contains(winningString);
+        return checkIfWinner(col, winningString, start, end, false);
     }
 
     /**
@@ -218,16 +212,34 @@ public class RowGameController {
     private boolean checkHorizontalWin(int row, int col, String winningString) {
 
         // For cases where there are already 2 Xs or Os before current block - XX_ or OO_
-        int start = col - 2;
+        int start = Math.max(col - 2, 0);
 
         // For cases where there are already 2 Xs or Os after current block - _XX or _OO
-        int end = col + 2;
+        int end = Math.min(col + 2, getGameModel().getCols() - 1);
 
-        // Create a string from the row from 2 places behind the current block to 2 places after the current block
+        // Check if the pattern is in the string of length 5
+        return checkIfWinner(row, winningString, start, end, true);
+    }
+
+    /**
+     * Builds the string along the line considered and checks if the current player is a winner
+     *
+     * @param fixedDim      - For horizontal checks, this will be the row of the block, else it will be the column
+     * @param winningString - Pattern for which the player is considered the winner
+     * @param start         - start of the chunk we are considering
+     * @param end           - end of the chunk we are considering
+     * @param isHorizontal  - boolean to signify if we are currently considering the horizontal chunk
+     * @return              - true if the player is a winner
+     */
+    private boolean checkIfWinner(int fixedDim, String winningString, int start, int end, boolean isHorizontal) {
         int i = start;
         StringBuilder stringBuilder = new StringBuilder();
-        while (i >= 0 && i < gameModel.getCols() && i <= end) {
-            stringBuilder.append(getContents(row, i));
+        while (i >= start && i <= end) {
+            if (isHorizontal) {
+                stringBuilder.append(getContents(fixedDim, i));
+            } else {
+                stringBuilder.append(getContents(i, fixedDim));
+            }
             i++;
         }
 
@@ -267,6 +279,7 @@ public class RowGameController {
         for (int row = 0; row < gameModel.getRows(); row++) {
             for (int column = 0; column < gameModel.getCols(); column++) {
                 gameView.getBlocks()[row][column].setEnabled(false);
+                gameModel.getBlocksData()[row][column].setIsLegalMove(false);
             }
         }
     }
@@ -284,6 +297,7 @@ public class RowGameController {
         }
         gameModel.setPlayer(Player.PLAYER_1);
         gameModel.setMovesLeft(gameModel.getRows() * gameModel.getCols());
+        gameModel.setFinalResult(null);
         gameView.getPlayerTurn().setText(Constants.GAME_START);
     }
 

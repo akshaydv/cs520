@@ -52,14 +52,13 @@ public class RowBlockModel {
         if (value == null) {
             throw new IllegalArgumentException("The value must be non-null.");
         }
-        this.contents = value;
-    }
-
-    public void setContents(enums.Player player) {
-        if (player == null) {
-            throw new IllegalArgumentException("Player must be non-null.");
+        if (!this.isLegalMove) {
+            throw new IllegalArgumentException("This is an illegal move.");
         }
-        this.contents = RowGameUtils.getTileContent(player);
+        this.contents = value;
+        if (!value.equals("")) {
+            this.isLegalMove = false;
+        }
     }
 
     /**
