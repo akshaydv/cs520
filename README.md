@@ -19,7 +19,7 @@ Make sure that you have Apache Ant installed and there are no PATH or versioning
 1. `cd tictactoe` -- if you are not already in the `tictactoe` directory
 
 2. `java -cp bin RowGameApp $rows $cols`, where $rows and $cols are respectively the rows and columns of the `tictactoe` game.  
-    For example: `java -cp bin RowGameApp 3 3`
+   For example: `java -cp bin RowGameApp 3 3`
 
 ### How to clean up:
 
